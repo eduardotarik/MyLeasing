@@ -7,6 +7,7 @@ namespace MyLeasing.Web.Data.Entities
         public int Id { get; set; }
 
         [Required(ErrorMessage = "The Document field is required.")]
+        [MaxLength(6)]
         [Display(Name = "Document*")]
         public string Document { get; set; }
 
@@ -14,10 +15,12 @@ namespace MyLeasing.Web.Data.Entities
         public string OwnerName => $"{FirstName} {LastName}";
 
         [Required(ErrorMessage = "The First Name field is required.")]
+        [MaxLength(30)]
         [Display(Name = "First Name*")]
         public string FirstName { get; set; }
 
         [Required(ErrorMessage = "The Last Name field is required.")]
+        [MaxLength(30)]
         [Display(Name = "Last Name*")]
         public string LastName { get; set; }
 
