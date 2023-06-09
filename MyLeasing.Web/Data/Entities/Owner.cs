@@ -7,8 +7,8 @@ namespace MyLeasing.Web.Data.Entities
         public int Id { get; set; }
 
         [Required(ErrorMessage = "The Document field is required.")]
-        [MaxLength(6)]
         [Display(Name = "Document*")]
+        [MaxLength(6)]
         public string Document { get; set; }
 
         [Display(Name = "Owner Name")]
@@ -24,18 +24,15 @@ namespace MyLeasing.Web.Data.Entities
         [Display(Name = "Last Name*")]
         public string LastName { get; set; }
 
+        [MaxLength(9)]
         [Display(Name = "Fixed Phone")]
+
         public string FixedPhone { get; set; }
 
+        [MaxLength(9)]
         [Display(Name = "CellPhone")]
         public string CellPhone { get; set; }
 
         public string Address { get; set; }
-
-        public void SetNames(string firstName, string lastName)
-        {
-            FirstName = firstName;
-            LastName = lastName;
-        }
     }
 }

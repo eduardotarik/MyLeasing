@@ -53,15 +53,29 @@ namespace MyLeasing.Web.Data
             string firstName = names[0];
             string lastName = names.Length > 1 ? names[1] : "";
 
+            string document = GenerateRandomDigits(6);
+            string fixedPhone = GenerateRandomDigits(7, "21");
+            string cellPhone = GenerateRandomDigits(7, "91");
+
             _context.Owners.Add(new Owner
             {
-                Document = _random.Next(1000000).ToString(),
+                Document = document,
                 FirstName = firstName,
                 LastName = lastName,
-                FixedPhone = _random.Next(1000000000).ToString(),
-                CellPhone = _random.Next(1000000000).ToString(),
+                FixedPhone = fixedPhone,
+                CellPhone = cellPhone,
                 Address = randomAddress
             });
+        }
+
+        private string GenerateRandomDigits(int length, string prefix = "")
+        {
+            string digits = prefix;
+            for (int i = 0; i < length; i++)
+            {
+                digits += _random.Next(10).ToString();
+            }
+            return digits;
         }
     }
 }

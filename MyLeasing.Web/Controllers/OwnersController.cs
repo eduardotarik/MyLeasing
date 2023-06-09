@@ -2,25 +2,23 @@
 using Microsoft.EntityFrameworkCore;
 using MyLeasing.Web.Data;
 using MyLeasing.Web.Data.Entities;
-using MyLeasing.Web.Models;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyLeasing.Web.Controllers
 {
     public class OwnersController : Controller
     {
-        private readonly DataContext _context;
+        private readonly IRepository _repository;
 
-        public OwnersController(DataContext context)
+        public OwnersController(IRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         // GET: Owners
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Owners.ToListAsync());
+            return View(_repository.GetOwners());
         }
 
         // GET: Owners/Details/5
@@ -31,8 +29,8 @@ namespace MyLeasing.Web.Controllers
                 return NotFound();
             }
 
-            var owner = await _context.Owners
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var owner = _repository.GetOwner(id.Value);
+
             if (owner == null)
             {
                 return NotFound();
@@ -52,36 +50,28 @@ namespace MyLeasing.Web.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(OwnerViewModel model)
+        public async Task<IActionResult> Create(Owner owner)
         {
             if (ModelState.IsValid)
             {
-                var owner = new Owner();
-                owner.SetNames(model.FirstName, model.LastName);
-                owner.Document = model.Document;
-                owner.FixedPhone = model.FixedPhone;
-                owner.CellPhone = model.CellPhone;
-                owner.Address = model.Address;
-
-                // Save the new owner record to the database
-                _context.Owners.Add(owner);
-                await _context.SaveChangesAsync();
-
+                _repository.AddOwner(owner);
+                await _repository.SaveAllAsync();
                 return RedirectToAction(nameof(Index));
             }
 
-            return View(model);
+            return View(owner);
         }
 
         // GET: Owners/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public IActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var owner = await _context.Owners.FindAsync(id);
+            var owner = _repository.GetOwner(id.Value);
+
             if (owner == null)
             {
                 return NotFound();
@@ -105,12 +95,12 @@ namespace MyLeasing.Web.Controllers
             {
                 try
                 {
-                    _context.Update(owner);
-                    await _context.SaveChangesAsync();
+                    _repository.UpdateOwner(owner);
+                    await _repository.SaveAllAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OwnerExists(owner.Id))
+                    if (!_repository.OwnersExists(owner.Id))
                     {
                         return NotFound();
                     }
@@ -125,15 +115,15 @@ namespace MyLeasing.Web.Controllers
         }
 
         // GET: Owners/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public IActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var owner = await _context.Owners
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var owner = _repository?.GetOwner(id.Value);
+
             if (owner == null)
             {
                 return NotFound();
@@ -147,15 +137,10 @@ namespace MyLeasing.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var owner = await _context.Owners.FindAsync(id);
-            _context.Owners.Remove(owner);
-            await _context.SaveChangesAsync();
+            var owner = _repository.GetOwner(id);
+            _repository.RemoveOwner(owner);
+            await _repository.SaveAllAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool OwnerExists(int id)
-        {
-            return _context.Owners.Any(e => e.Id == id);
         }
     }
 }
