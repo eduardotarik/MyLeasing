@@ -1,4 +1,6 @@
-﻿using MyLeasing.Web.Data.Entities;
+﻿using Microsoft.AspNetCore.Identity;
+using MyLeasing.Web.Data.Entities;
+using MyLeasing.Web.Helpers;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,11 +10,13 @@ namespace MyLeasing.Web.Data
     public class SeedDb
     {
         private readonly DataContext _context;
+        private readonly IUserHelper _userHelper;
         private Random _random;
 
-        public SeedDb(DataContext context)
+        public SeedDb(DataContext context, IUserHelper userHelper)
         {
             _context = context;
+            _userHelper = userHelper;
             _random = new Random();
         }
 
@@ -20,23 +24,42 @@ namespace MyLeasing.Web.Data
         {
             await _context.Database.EnsureCreatedAsync();
 
+            var user = await _userHelper.GetUserByEmailAsync("eduardo@gmail.com");
+            if (user == null)
+            {
+                user = new User
+                {
+                    FirstName = "Eduardo",
+                    LastName = "Fernandes",
+                    Email = "eduardo@gmail.com",
+                    UserName = "eduardo@gmail.com",
+                    PhoneNumber = "913636654",
+                };
+
+                var result = await _userHelper.AddUserAsync(user, "123456");
+                if (result != IdentityResult.Success)
+                {
+                    throw new InvalidOperationException("Could not create the user in seeder");
+                }
+            }
+
             if (!_context.Owners.Any())
             {
-                AddOwners("Ricardo Barros");
-                AddOwners("Daiane Farias");
-                AddOwners("Diogo Castro");
-                AddOwners("Luís Silveira");
-                AddOwners("António Pimenta");
-                AddOwners("Filipe Fernandes");
-                AddOwners("Tânia Perreira");
-                AddOwners("Domingos Silva");
-                AddOwners("Tiago Fonseca");
-                AddOwners("Pedro Alberto");
+                AddOwners("Ricardo Barros", user);
+                AddOwners("Daiane Farias", user);
+                AddOwners("Diogo Castro", user);
+                AddOwners("Luís Silveira", user);
+                AddOwners("António Pimenta", user);
+                AddOwners("Filipe Fernandes", user);
+                AddOwners("Tânia Perreira", user);
+                AddOwners("Domingos Silva", user);
+                AddOwners("Tiago Fonseca", user);
+                AddOwners("Pedro Alberto", user);
                 await _context.SaveChangesAsync();
             }
         }
 
-        private void AddOwners(string name)
+        private void AddOwners(string name, User user)
         {
             Random _random = new Random();
 
@@ -64,7 +87,8 @@ namespace MyLeasing.Web.Data
                 LastName = lastName,
                 FixedPhone = fixedPhone,
                 CellPhone = cellPhone,
-                Address = randomAddress
+                Address = randomAddress,
+                User = user
             });
         }
 

@@ -2,6 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using MyLeasing.Web.Data;
 using MyLeasing.Web.Data.Entities;
+using MyLeasing.Web.Helpers;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyLeasing.Web.Controllers
@@ -9,16 +11,19 @@ namespace MyLeasing.Web.Controllers
     public class OwnersController : Controller
     {
         private readonly IOwnerRepository _ownerRepository;
+        private readonly IUserHelper _userHelper;
 
-        public OwnersController(IOwnerRepository ownerRepository)
+        public OwnersController(IOwnerRepository ownerRepository,
+            IUserHelper userHelper)
         {
             _ownerRepository = ownerRepository;
+            _userHelper = userHelper;
         }
 
         // GET: Owners
         public IActionResult Index()
         {
-            return View(_ownerRepository.GetAll());
+            return View(_ownerRepository.GetAll().OrderBy(p => p.FirstName));
         }
 
         // GET: Owners/Details/5
@@ -54,6 +59,7 @@ namespace MyLeasing.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                owner.User = await _userHelper.GetUserByEmailAsync("eduardo@gmail.com");
                 await _ownerRepository.CreateAsync(owner);
                 return RedirectToAction(nameof(Index));
             }
@@ -94,6 +100,7 @@ namespace MyLeasing.Web.Controllers
             {
                 try
                 {
+                    owner.User = await _userHelper.GetUserByEmailAsync("eduardo@gmail.com");
                     await _ownerRepository.UpdateAsync(owner);
                 }
                 catch (DbUpdateConcurrencyException)
