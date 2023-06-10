@@ -1,4 +1,4 @@
-﻿@model MyLeasing.Web.Data.Entities.Owner
+﻿@model MyLeasing.Web.Models.OwnerViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -10,9 +10,11 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="OwnerPhoto" />
+
             <div class="form-group">
                 <label asp-for="Document" class="control-label"></label>
                 <input asp-for="Document" class="form-control" />
@@ -27,6 +29,11 @@
                 <label asp-for="LastName" class="control-label"></label>
                 <input asp-for="LastName" class="form-control" />
                 <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhotoFile" class="control-label"></label>
+                <input asp-for="PhotoFile" class="form-control" type="file" />
+                <span asp-validation-for="PhotoFile" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="FixedPhone" class="control-label"></label>
@@ -48,6 +55,12 @@
                 <a asp-action="Index" class="btn btn-success">Back to List</a>
             </div>
         </form>
+    </div>
+    <div class="col-md-4">
+        @if (!string.IsNullOrEmpty(Model.OwnerPhoto))
+        {
+            <img src="@Url.Content(Model.OwnerPhoto)" alt="Photo" style="width: 300px; height: 450px; max-width: 100%; height: auto;">
+        }
     </div>
 </div>
 
