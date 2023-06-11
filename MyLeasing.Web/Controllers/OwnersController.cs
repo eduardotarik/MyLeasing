@@ -15,12 +15,18 @@ namespace MyLeasing.Web.Controllers
     {
         private readonly IOwnerRepository _ownerRepository;
         private readonly IUserHelper _userHelper;
+        private readonly IImageHelper _imageHelper;
+        private readonly IConverterHelper _converterHelper;
 
         public OwnersController(IOwnerRepository ownerRepository,
-            IUserHelper userHelper)
+            IUserHelper userHelper,
+            IImageHelper imageHelper,
+            IConverterHelper converterHelper)
         {
             _ownerRepository = ownerRepository;
             _userHelper = userHelper;
+            _imageHelper = imageHelper;
+            _converterHelper = converterHelper;
         }
 
         // GET: Owners
@@ -66,23 +72,10 @@ namespace MyLeasing.Web.Controllers
 
                 if (model.PhotoFile != null && model.PhotoFile.Length > 0)
                 {
-                    var guid = Guid.NewGuid().ToString();
-                    var file = $"{guid}.jpg";
-
-                    path = Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "wwwroot\\images\\photos",
-                        file);
-
-                    using (var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await model.PhotoFile.CopyToAsync(stream);
-                    }
-
-                    path = $"~/images/photos/{file}";
+                    path = await _imageHelper.UploadImageAsync(model.PhotoFile, "photos");
                 }
 
-                var owner = this.ToOwner(model, path);
+                var owner = _converterHelper.ToOwner(model, path, true);
 
                 owner.User = await _userHelper.GetUserByEmailAsync("eduardo@gmail.com");
                 await _ownerRepository.CreateAsync(owner);
@@ -123,7 +116,8 @@ namespace MyLeasing.Web.Controllers
                 return NotFound();
             }
 
-            var model = this.ToOwnerViewModel(owner);
+            var model = _converterHelper.ToOwnerViewModel(owner);
+            
             return View(model);
         }
 
@@ -158,24 +152,11 @@ namespace MyLeasing.Web.Controllers
 
                     if (model.PhotoFile != null && model.PhotoFile.Length > 0)
                     {
-                        var guid = Guid.NewGuid().ToString();
-                        var file = $"{guid}.jpg";
-
-                        path = Path.Combine(
-                            Directory.GetCurrentDirectory(),
-                            "wwwroot\\images\\photos",
-                            file);
-
-                        using (var stream = new FileStream(path, FileMode.Create))
-                        {
-                            await model.PhotoFile.CopyToAsync(stream);
-                        }
-
-                        path = $"~/images/photos/{file}";
+                        path = await _imageHelper.UploadImageAsync(model.PhotoFile, "photos");
                     }
 
-                    var owner = this.ToOwner(model, path);
-
+                    var owner = _converterHelper.ToOwner(model, path, false);
+                    
                     await _ownerRepository.UpdateAsync(owner);
                 }
                 catch (DbUpdateConcurrencyException)
