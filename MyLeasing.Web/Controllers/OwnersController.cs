@@ -4,8 +4,6 @@ using MyLeasing.Web.Data;
 using MyLeasing.Web.Data.Entities;
 using MyLeasing.Web.Helpers;
 using MyLeasing.Web.Models;
-using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -117,7 +115,7 @@ namespace MyLeasing.Web.Controllers
             }
 
             var model = _converterHelper.ToOwnerViewModel(owner);
-            
+
             return View(model);
         }
 
@@ -156,7 +154,7 @@ namespace MyLeasing.Web.Controllers
                     }
 
                     var owner = _converterHelper.ToOwner(model, path, false);
-                    
+
                     await _ownerRepository.UpdateAsync(owner);
                 }
                 catch (DbUpdateConcurrencyException)

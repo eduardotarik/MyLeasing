@@ -22,7 +22,7 @@ namespace MyLeasing.Web.Helpers
                 await photoFile.CopyToAsync(stream);
             }
 
-            return $"~/images/photos/{file}";
+            return $"~/images/{folder}/{file}";
         }
     }
 }

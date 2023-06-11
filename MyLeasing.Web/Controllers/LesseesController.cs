@@ -15,12 +15,18 @@ namespace MyLeasing.Web.Controllers
     {
         private readonly ILesseeRepository _lesseeRepository;
         private readonly IUserHelper _userHelper;
+        private readonly IImageHelper _imageHelper;
+        private readonly IConverterHelper _converterHelper;
 
         public LesseesController(ILesseeRepository lesseeRepository,
-            IUserHelper userHelper)
+            IUserHelper userHelper,
+            IImageHelper imageHelper,
+            IConverterHelper converterHelper)
         {
             _lesseeRepository = lesseeRepository;
             _userHelper = userHelper;
+            _imageHelper = imageHelper;
+            _converterHelper = converterHelper;
         }
 
         // GET: Lessees
@@ -61,49 +67,20 @@ namespace MyLeasing.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var guid = Guid.NewGuid().ToString();
-                var file = $"{guid}.jpg";
-
                 var path = string.Empty;
 
                 if (model.PhotoFile != null && model.PhotoFile.Length > 0)
                 {
-                    path = Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "wwwroot\\photos\\lessees",
-                        file);
-
-                    using (var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await model.PhotoFile.CopyToAsync(stream);
-                    }
-
-                    path = $"~/photos/lessees/{file}";
+                    path = await _imageHelper.UploadImageAsync(model.PhotoFile, "lessees");
                 }
 
-                var lessee = this.ToLessee(model, path);
+                var lessee = _converterHelper.ToLessee(model, path, true);
 
                 lessee.User = await _userHelper.GetUserByEmailAsync("eduardo@gmail.com");
                 await _lesseeRepository.CreateAsync(lessee);
                 return RedirectToAction(nameof(Index));
             }
             return View(model);
-        }
-
-        private Lessee ToLessee(LesseeViewModel model, string path)
-        {
-            return new Lessee
-            {
-                Id = model.Id,
-                Document = model.Document,
-                FirstName = model.FirstName,
-                LastName = model.LastName,
-                FixedPhone = model.FixedPhone,
-                CellPhone = model.CellPhone,
-                Address = model.Address,
-                LesseePhoto = path,
-                User = model.User
-            };
         }
 
         // GET: Lessees/Edit/5
@@ -120,23 +97,8 @@ namespace MyLeasing.Web.Controllers
                 return NotFound();
             }
 
-            var model = this.ToLesseeViewModel(lessee);
+            var model = _converterHelper.ToLesseeViewModel(lessee);
             return View(model);
-        }
-
-        private LesseeViewModel ToLesseeViewModel(Lessee lessee)
-        {
-            return new LesseeViewModel
-            {
-                Id = lessee.Id,
-                FirstName = lessee.FirstName,
-                LastName = lessee.LastName,
-                FixedPhone = lessee.FixedPhone,
-                CellPhone = lessee.CellPhone,
-                Address = lessee.Address,
-                LesseePhoto = lessee.LesseePhoto,
-                User = lessee.User
-            };
         }
 
         // POST: Lessees/Edit/5
@@ -155,23 +117,10 @@ namespace MyLeasing.Web.Controllers
 
                     if (model.PhotoFile != null && model.PhotoFile.Length > 0)
                     {
-                        var guid = Guid.NewGuid().ToString();
-                        var file = $"{guid}.jpg";
-
-                        path = Path.Combine(
-                            Directory.GetCurrentDirectory(),
-                            "wwwroot\\photos\\lessees",
-                            file);
-
-                        using (var stream = new FileStream(path, FileMode.Create))
-                        {
-                            await model.PhotoFile.CopyToAsync(stream);
-                        }
-
-                        path = $"~/photos/lessees/{file}";
+                        path = await _imageHelper.UploadImageAsync(model.PhotoFile, "lessees");
                     }
 
-                    var lessee = this.ToLessee(model, path);
+                    var lessee = _converterHelper.ToLessee(model, path, false);
 
                     lessee.User = await _userHelper.GetUserByEmailAsync("eduardo@gmail.com");
                     await _lesseeRepository.UpdateAsync(lessee);
