@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis;
 using MyLeasing.Web.Data.Entities;
 using MyLeasing.Web.Helpers;
 using System;
@@ -57,21 +58,24 @@ namespace MyLeasing.Web.Data
                 AddOwners("Pedro Alberto", user);
                 await _context.SaveChangesAsync();
             }
+
+            if (!_context.Lessees.Any())
+            {
+                AddLessee("John Doe", user);
+                AddLessee("Eduardo Batista", user);
+                AddLessee("Pablo Alexandre", user);
+                AddLessee("Fátima Laurin", user);
+                AddLessee("Maria Andrade", user);
+                await _context.SaveChangesAsync();
+            }
         }
 
         private void AddOwners(string name, User user)
         {
             Random _random = new Random();
 
-            string[] streetNames = { "Av. da Liberdade", "Estrada da Luz", "Travessa das Flores", "Rua da Verdade", "Rua do Ouro" };
-            string[] numbers = { "21", "109", "1", "34", "304" };
+            string randomAddress = GenerateRandomAddress();
 
-            string randomStreet = streetNames[_random.Next(streetNames.Length)];
-            string randomNumber = numbers[_random.Next(numbers.Length)];
-
-            string randomAddress = $"{randomStreet}, {randomNumber}";
-
-            // Split the name into first name and last name
             string[] names = name.Split(' ');
             string firstName = names[0];
             string lastName = names.Length > 1 ? names[1] : "";
@@ -92,6 +96,30 @@ namespace MyLeasing.Web.Data
             });
         }
 
+        private void AddLessee(string name, User user)
+        {
+            string randomAddress = GenerateRandomAddress();
+
+            string[] names = name.Split(' ');
+            string firstName = names[0];
+            string lastName = names.Length > 1 ? names[1] : "";
+
+            string document = GenerateRandomDigits(6);
+            string fixedPhone = GenerateRandomDigits(7, "21");
+            string cellPhone = GenerateRandomDigits(7, "91");
+
+            _context.Lessees.Add(new Lessee
+            {
+                Document = document,
+                FirstName = firstName,
+                LastName = lastName,
+                FixedPhone = fixedPhone,
+                CellPhone = cellPhone,
+                Address = randomAddress,
+                User = user
+            });
+        }
+
         private string GenerateRandomDigits(int length, string prefix = "")
         {
             string digits = prefix;
@@ -100,6 +128,17 @@ namespace MyLeasing.Web.Data
                 digits += _random.Next(10).ToString();
             }
             return digits;
+        }
+
+        private string GenerateRandomAddress()
+        {
+            string[] streetNames = { "Av. da Liberdade", "Estrada da Luz", "Travessa das Flores", "Rua da Verdade", "Rua do Ouro" };
+            string[] numbers = { "21", "109", "1", "34", "304" };
+
+            string randomStreet = streetNames[_random.Next(streetNames.Length)];
+            string randomNumber = numbers[_random.Next(numbers.Length)];
+
+            return $"{randomStreet}, {randomNumber}";
         }
     }
 }

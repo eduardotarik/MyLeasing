@@ -2,7 +2,7 @@
 
 namespace MyLeasing.Web.Data.Entities
 {
-    public class Lessee
+    public class Lessee : IEntity
     {
         public int Id { get; set; }
 
@@ -36,5 +36,18 @@ namespace MyLeasing.Web.Data.Entities
         public string FullNameWithDocument => $"{FirstName} {LastName} - {Document}";
 
         public User User { get; set; }
+
+        public string ImageFullPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(LesseePhoto))
+                {
+                    return null;
+                }
+
+                return $"https://localhost:44374{LesseePhoto.Substring(1)}";
+            }
+        }
     }
 }

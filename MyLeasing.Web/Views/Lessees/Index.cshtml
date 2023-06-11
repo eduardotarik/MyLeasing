@@ -58,7 +58,10 @@
                 @Html.DisplayFor(modelItem => item.Address)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.LesseePhoto)
+                @if (!string.IsNullOrEmpty(item.LesseePhoto))
+                {
+                    <img src="@Url.Content(item.LesseePhoto)" alt="Photo" style="width: 100px; height: 150px; max-width: 100%; height: auto;">
+                }
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
