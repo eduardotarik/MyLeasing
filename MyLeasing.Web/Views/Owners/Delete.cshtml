@@ -52,10 +52,7 @@
             </dl>
         </div>
         <div class="col-md-4">
-            @if (!string.IsNullOrEmpty(Model.OwnerPhoto))
-            {
-                <img src="@Url.Content(Model.OwnerPhoto)" alt="Photo" style="width: 300px; height: 450px; max-width: 100%; height: auto;">
-            }
+            <img src="@Url.Content(Model.ImageFullPath)" alt="Photo" style="width: 300px; height: 450px; max-width: 100%; height: auto;">
         </div>
     </div>
     <form asp-action="Delete">

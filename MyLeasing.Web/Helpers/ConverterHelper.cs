@@ -1,12 +1,12 @@
 ﻿using MyLeasing.Web.Data.Entities;
 using MyLeasing.Web.Models;
-using System.IO;
+using System;
 
 namespace MyLeasing.Web.Helpers
 {
     public class ConverterHelper : IConverterHelper
     {
-        public Owner ToOwner(OwnerViewModel model, string path, bool isNew)
+        public Owner ToOwner(OwnerViewModel model, Guid imageId, bool isNew)
         {
             return new Owner
             {
@@ -14,7 +14,7 @@ namespace MyLeasing.Web.Helpers
                 Document = model.Document,
                 FirstName = model.FirstName,
                 LastName = model.LastName,
-                OwnerPhoto = path,
+                ImageId = imageId,
                 FixedPhone = model.FixedPhone,
                 CellPhone = model.CellPhone,
                 Address = model.Address,
@@ -30,7 +30,7 @@ namespace MyLeasing.Web.Helpers
                 Document = owner.Document,
                 FirstName = owner.FirstName,
                 LastName = owner.LastName,
-                OwnerPhoto = owner.OwnerPhoto,
+                ImageId = owner.ImageId,
                 FixedPhone = owner.FixedPhone,
                 CellPhone = owner.CellPhone,
                 Address = owner.Address,
@@ -38,7 +38,7 @@ namespace MyLeasing.Web.Helpers
             };
         }
 
-        public Lessee ToLessee(LesseeViewModel model, string path, bool isNew)
+        public Lessee ToLessee(LesseeViewModel model, Guid photoId, bool isNew)
         {
             return new Lessee
             {
@@ -49,7 +49,7 @@ namespace MyLeasing.Web.Helpers
                 FixedPhone = model.FixedPhone,
                 CellPhone = model.CellPhone,
                 Address = model.Address,
-                LesseePhoto = path,
+                PhotoId = photoId,
                 User = model.User
             };
         }
@@ -59,12 +59,13 @@ namespace MyLeasing.Web.Helpers
             return new LesseeViewModel
             {
                 Id = lessee.Id,
+                Document = lessee.Document,
                 FirstName = lessee.FirstName,
                 LastName = lessee.LastName,
                 FixedPhone = lessee.FixedPhone,
                 CellPhone = lessee.CellPhone,
                 Address = lessee.Address,
-                LesseePhoto = lessee.LesseePhoto,
+                PhotoId = lessee.PhotoId,
                 User = lessee.User
             };
         }

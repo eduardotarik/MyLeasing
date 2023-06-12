@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Lessees</h1>
 
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New</a>
@@ -31,7 +31,7 @@
                 @Html.DisplayNameFor(model => model.Address)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LesseePhoto)
+                @Html.DisplayNameFor(model => model.PhotoId)
             </th>
             <th></th>
         </tr>
@@ -58,10 +58,7 @@
                 @Html.DisplayFor(modelItem => item.Address)
             </td>
             <td>
-                @if (!string.IsNullOrEmpty(item.LesseePhoto))
-                {
-                    <img src="@Url.Content(item.LesseePhoto)" alt="Photo" style="width: 100px; height: 150px; max-width: 100%; height: auto;">
-                }
+                <img src="@Url.Content(item.PhotoFullPath)" alt="Photo" style="width: 100px; height: 150px; max-width: 100%; height: auto;">
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>

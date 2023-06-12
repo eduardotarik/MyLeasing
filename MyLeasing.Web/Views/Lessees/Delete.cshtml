@@ -52,10 +52,7 @@
             </dl>
         </div>
         <div class="col-md-4">
-            @if (!string.IsNullOrEmpty(Model.LesseePhoto))
-            {
-                <img src="@Url.Content(Model.LesseePhoto)" alt="Photo" style="width: 300px; height: 450px; max-width: 100%; height: auto;">
-            }
+            <img src="@Url.Content(Model.PhotoFullPath)" alt="Photo" style="width: 300px; height: 450px; max-width: 100%; height: auto;">
         </div>
     </div>
     

@@ -1,11 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyLeasing.Web.Data;
-using MyLeasing.Web.Data.Entities;
 using MyLeasing.Web.Helpers;
 using MyLeasing.Web.Models;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -15,17 +13,17 @@ namespace MyLeasing.Web.Controllers
     {
         private readonly ILesseeRepository _lesseeRepository;
         private readonly IUserHelper _userHelper;
-        private readonly IImageHelper _imageHelper;
+        private readonly IBlobHelper _blobHelper;
         private readonly IConverterHelper _converterHelper;
 
         public LesseesController(ILesseeRepository lesseeRepository,
             IUserHelper userHelper,
-            IImageHelper imageHelper,
+            IBlobHelper blobHelper,
             IConverterHelper converterHelper)
         {
             _lesseeRepository = lesseeRepository;
             _userHelper = userHelper;
-            _imageHelper = imageHelper;
+            _blobHelper = blobHelper;
             _converterHelper = converterHelper;
         }
 
@@ -67,14 +65,14 @@ namespace MyLeasing.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var path = string.Empty;
+                Guid photoId = Guid.Empty;
 
                 if (model.PhotoFile != null && model.PhotoFile.Length > 0)
                 {
-                    path = await _imageHelper.UploadImageAsync(model.PhotoFile, "lessees");
+                    photoId = await _blobHelper.UploadBlobAsync(model.PhotoFile, "lessees");
                 }
 
-                var lessee = _converterHelper.ToLessee(model, path, true);
+                var lessee = _converterHelper.ToLessee(model, photoId, true);
 
                 lessee.User = await _userHelper.GetUserByEmailAsync("eduardo@gmail.com");
                 await _lesseeRepository.CreateAsync(lessee);
@@ -98,6 +96,7 @@ namespace MyLeasing.Web.Controllers
             }
 
             var model = _converterHelper.ToLesseeViewModel(lessee);
+
             return View(model);
         }
 
@@ -113,21 +112,21 @@ namespace MyLeasing.Web.Controllers
             {
                 try
                 {
-                    var path = model.LesseePhoto;
+                    Guid photoId = model.PhotoId;
 
                     if (model.PhotoFile != null && model.PhotoFile.Length > 0)
                     {
-                        path = await _imageHelper.UploadImageAsync(model.PhotoFile, "lessees");
+                        photoId = await _blobHelper.UploadBlobAsync(model.PhotoFile, "lessees");
                     }
 
-                    var lessee = _converterHelper.ToLessee(model, path, false);
+                    var lessee = _converterHelper.ToLessee(model, photoId, false);
 
                     lessee.User = await _userHelper.GetUserByEmailAsync("eduardo@gmail.com");
                     await _lesseeRepository.UpdateAsync(lessee);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (! await _lesseeRepository.ExistAsync(model.Id))
+                    if (!await _lesseeRepository.ExistAsync(model.Id))
                     {
                         return NotFound();
                     }

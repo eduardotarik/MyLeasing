@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyLeasing.Web.Data.Entities
 {
@@ -25,7 +26,7 @@ namespace MyLeasing.Web.Data.Entities
         public string LastName { get; set; }
 
         [Display(Name = "Photo")]
-        public string OwnerPhoto { get; set; }
+        public Guid ImageId { get; set; }
 
         [MaxLength(9, ErrorMessage = "The {0} field can not have more than {1} characters.")]
         [Display(Name = "Fixed Phone")]
@@ -44,18 +45,9 @@ namespace MyLeasing.Web.Data.Entities
 
         public User User { get; set; }
 
-        public string PhotoFullPath
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(OwnerPhoto))
-                {
-                    return null;
-                }
-
-                return $"https://localhost:44374{OwnerPhoto.Substring(1)}";
-            }
-        }
+        public string ImageFullPath => ImageId == Guid.Empty
+            ? $"https://myleasingwebsite.azurewebsites.net/images/noimage.png"
+            : $"https://myleasingwebsite.blob.core.windows.net/photos/{ImageId}";
 
     }
 }

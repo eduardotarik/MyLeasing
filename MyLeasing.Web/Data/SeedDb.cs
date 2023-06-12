@@ -98,6 +98,8 @@ namespace MyLeasing.Web.Data
 
         private void AddLessee(string name, User user)
         {
+            Random _random = new Random();
+
             string randomAddress = GenerateRandomAddress();
 
             string[] names = name.Split(' ');
