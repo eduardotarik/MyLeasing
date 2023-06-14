@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 
 namespace MyLeasing.Web.Controllers
 {
-    [Authorize]
-
     public class LesseesController : Controller
     {
         private readonly ILesseeRepository _lesseeRepository;
@@ -54,6 +52,7 @@ namespace MyLeasing.Web.Controllers
         }
 
         // GET: Lessees/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -77,7 +76,7 @@ namespace MyLeasing.Web.Controllers
 
                 var lessee = _converterHelper.ToLessee(model, photoId, true);
 
-                lessee.User = await _userHelper.GetUserByEmailAsync("eduardo@gmail.com");
+                lessee.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                 await _lesseeRepository.CreateAsync(lessee);
                 return RedirectToAction(nameof(Index));
             }
@@ -85,6 +84,7 @@ namespace MyLeasing.Web.Controllers
         }
 
         // GET: Lessees/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -124,7 +124,7 @@ namespace MyLeasing.Web.Controllers
 
                     var lessee = _converterHelper.ToLessee(model, photoId, false);
 
-                    lessee.User = await _userHelper.GetUserByEmailAsync("eduardo@gmail.com");
+                    lessee.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                     await _lesseeRepository.UpdateAsync(lessee);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -144,6 +144,7 @@ namespace MyLeasing.Web.Controllers
         }
 
         // GET: Lessees/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)

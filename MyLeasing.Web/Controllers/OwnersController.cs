@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyLeasing.Web.Data;
+using MyLeasing.Web.Data.Entities;
 using MyLeasing.Web.Helpers;
 using MyLeasing.Web.Models;
 using System;
@@ -55,6 +56,7 @@ namespace MyLeasing.Web.Controllers
         }
 
         // GET: Owners/Create
+        [Authorize]
         public IActionResult Create()
         {
             return View();
@@ -78,7 +80,7 @@ namespace MyLeasing.Web.Controllers
 
                 var owner = _converterHelper.ToOwner(model, imageId, true);
 
-                owner.User = await _userHelper.GetUserByEmailAsync("eduardo@gmail.com");
+                owner.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                 await _ownerRepository.CreateAsync(owner);
                 return RedirectToAction(nameof(Index));
             }
@@ -87,6 +89,7 @@ namespace MyLeasing.Web.Controllers
         }
 
         // GET: Owners/Edit/5
+        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -126,6 +129,7 @@ namespace MyLeasing.Web.Controllers
 
                     var owner = _converterHelper.ToOwner(model, imageId, false);
 
+                    owner.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                     await _ownerRepository.UpdateAsync(owner);
                 }
                 catch (DbUpdateConcurrencyException)
@@ -145,6 +149,7 @@ namespace MyLeasing.Web.Controllers
         }
 
         // GET: Owners/Delete/5
+        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
