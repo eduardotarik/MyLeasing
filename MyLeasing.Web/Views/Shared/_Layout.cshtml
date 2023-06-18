@@ -29,19 +29,13 @@
                         <li class="nav-item">
                             <a class="nav-link text-light" asp-area="" asp-controller="Contact" asp-action="Index">Contact</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Owners" asp-action="Index">Owners</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Lessees" asp-action="Index">Lessees</a>
-                        </li>
                         @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle text-light" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-expanded="false">Admin</a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                        <li><a class="dropdown-item" asp-area="" asp-controller="" asp-action="">Owners</a></li>
-                                        <li><a class="dropdown-item" asp-area="" asp-controller="" asp-action="">Lessees</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Owners" asp-action="Index">Owners</a></li>
+                                        <li><a class="dropdown-item" asp-area="" asp-controller="Lessees" asp-action="Index">Lessees</a></li>
                                 </ul>
                             </li>
                         }

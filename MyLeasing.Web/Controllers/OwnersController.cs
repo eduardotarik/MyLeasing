@@ -10,7 +10,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyLeasing.Web.Controllers
-{ 
+{
+    [Authorize(Roles = "Admin")]
     public class OwnersController : Controller
     {
         private readonly IOwnerRepository _ownerRepository;
@@ -54,7 +55,6 @@ namespace MyLeasing.Web.Controllers
         }
 
         // GET: Owners/Create
-        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -87,7 +87,6 @@ namespace MyLeasing.Web.Controllers
         }
 
         // GET: Owners/Edit/5
-        [Authorize]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -147,7 +146,6 @@ namespace MyLeasing.Web.Controllers
         }
 
         // GET: Owners/Delete/5
-        [Authorize]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
