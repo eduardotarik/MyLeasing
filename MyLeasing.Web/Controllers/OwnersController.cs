@@ -10,9 +10,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace MyLeasing.Web.Controllers
-{
-    [Authorize]
-
+{ 
     public class OwnersController : Controller
     {
         private readonly IOwnerRepository _ownerRepository;
@@ -56,7 +54,7 @@ namespace MyLeasing.Web.Controllers
         }
 
         // GET: Owners/Create
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
